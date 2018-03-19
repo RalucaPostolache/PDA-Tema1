@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.Semaphore;
 
 public class Main {
 
@@ -16,8 +17,10 @@ public class Main {
 		
 		int max=10;
 		
-		Producator producator = new Producator(coada,max);
-		Consumator consumator = new Consumator(coada);
+		Semaphore semProducator = new Semaphore(max);
+		Semaphore semConsumator = new Semaphore(0);
+		Producator producator = new Producator(coada,max, semConsumator, semProducator);
+		Consumator consumator = new Consumator(coada, semConsumator, semProducator);
 		
 		producator.start();
 		consumator.start();
