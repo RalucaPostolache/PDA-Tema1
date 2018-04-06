@@ -28,16 +28,20 @@ public class Consumator extends Thread{
 		int nr=0;
 		while(true) {
 			Main.lock.lock(); 
-			try {
-				semConsumator.acquire();
-				nr = coada.remove(0);
-				semProducator.release();
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			while(coada.isEmpty()) {
+				try {
+					coada.wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					break;
+				}
 			}
-			
+			nr = coada.remove(0);
 			Main.lock.unlock();
+			coada.notifyAll();
+			
+			
 			System.out.println("Numarul " + nr + " este consumat");
 			consume(nr);
 			}

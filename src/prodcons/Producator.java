@@ -34,17 +34,20 @@ public class Producator extends Thread{
 		while(true) {
 			int nr=produce();
 			Main.lock.lock();
-			try {
-				semProducator.acquire();
-				coada.add(nr);
-				semConsumator.release();
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			while(coada.size()==Main.MAX_SIZE) {
+				try {
+					coada.wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					break;
+				}
 			}
-			
-			
+			coada.add(nr);
 			Main.lock.unlock();
+			coada.notifyAll();
+			
+			
 			System.out.println("Numarul " + nr + " este produs");
 			
 		}
